@@ -1,6 +1,8 @@
 import "./Map.css";
 import { useRef, useEffect } from "react";
 
+const apiKey = import.meta.env.VITE_GOOGLE_API_KEY;
+console.log("API URL IS HTIS", apiKey);
 const Map = ({ className, center, zoom }) => {
   const mapRef = useRef();
 
@@ -13,7 +15,7 @@ const Map = ({ className, center, zoom }) => {
       const map = new Map(mapRef.current, {
         center: center,
         zoom: zoom,
-        mapId: "d8faa6ece36c8025e2a3b37f"
+        mapId: apiKey,
       });
       new AdvancedMarkerElement({
         map,
