@@ -2,7 +2,6 @@ import "./Map.css";
 import { useRef, useEffect } from "react";
 
 const apiKey = import.meta.env.VITE_GOOGLE_API_KEY;
-console.log("API URL IS HTIS", apiKey);
 const Map = ({ className, center, zoom }) => {
   const mapRef = useRef();
 
