@@ -40,8 +40,11 @@
 }
 
 .place-item__modal-actions {
-  text-align: right;
+  display: flex;
+  justify-content: flex-end;
+  gap: 0.5rem; 
 }
+
 
 .place-item__actions button,
 .place-item__actions a {

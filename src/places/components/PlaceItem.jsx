@@ -6,7 +6,9 @@ import { useState } from "react";
 import Map from "../../shared/components/UI/Map";
 import { useContext } from "react";
 import { AuthContext } from "../../shared/context/authContext";
-import Auth from "../../user/pages/Auth";
+import { useHttpClient } from "../../shared/util/http-hook";
+import ErrorModal from "../../shared/components/UI/ErrorModal";
+import LoadingSpinner from "../../shared/components/UI/LoadingSpinner";
 
 const PlaceItem = ({
   id,
@@ -17,9 +19,11 @@ const PlaceItem = ({
   imageUrl,
   coordinates,
   address,
+  onDelete,
 }) => {
   const [showMap, setShowMap] = useState(false);
   const [showConfirmModal, setShowConfirmModal] = useState(false);
+  const { isLoading, error, sendRequest, clearError } = useHttpClient();
 
   const auth = useContext(AuthContext);
 
@@ -38,13 +42,23 @@ const PlaceItem = ({
     setShowConfirmModal(false);
   };
 
-  const confirmDeleteHandler = () => {
-    setShowConfirmModal(false);
-    console.log("Deleted");
+  const confirmDeleteHandler = async () => {
+    try {
+      await sendRequest(
+      `${import.meta.env.VITE_BACKEND_URL}/places/${id}`
+,
+        "DELETE",
+        null,
+        { Authorization: "Bearer " + auth.token }
+      );
+      onDelete(id);
+      setShowConfirmModal(false);
+    } catch (error) {}
   };
 
   return (
     <>
+      <ErrorModal error={error} onClear={clearError} />
       <Modal
         show={showMap}
         onCancel={closeMapHandler}
@@ -76,9 +90,13 @@ const PlaceItem = ({
         <p className="center">Are you sure?</p>
       </Modal>
       <li className="place-item">
+        {isLoading && <LoadingSpinner asOverlay />}
         <Card className="place-item__content">
           <div className="place-item__image">
-            <img src={image} alt={title} />
+            <img
+              src={`${import.meta.env.VITE_ASSET_URL}/${image}`}
+              alt={title}
+            />
           </div>
           <div className="place-item__info">
             <h2> {title}</h2>
@@ -89,9 +107,11 @@ const PlaceItem = ({
             <Button inverse onClick={openMapHandler}>
               View on map
             </Button>
-            {auth.isLoggedIn && <Button to={`/places/${id}`}>Edit</Button>}
+            {auth.userId === creatorId && (
+              <Button to={`/places/${id}`}>Edit</Button>
+            )}
 
-            {auth.isLoggedIn && (
+            {auth.userId === creatorId && (
               <Button danger onClick={showDeleteWarningHandler}>
                 Delete
               </Button>

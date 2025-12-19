@@ -26,8 +26,11 @@ const MainNavigation = () => {
       </SideDrawer>
 
       <MainHeader>
+        <h1 className="main-navigation__title">
+          <Link to='/' >Your Junk</Link>
+        </h1>
         <button
-          className="main-navigation__menu-btn"
+          className={`main-navigation__menu-btn ${openDrawer ? "open" : ""}`}
           onClick={openDrawerHandle}
         >
           <span />
@@ -35,9 +38,6 @@ const MainNavigation = () => {
           <span />
         </button>
 
-        <h1 className="main-navigation__title">
-          <Link>Your Junk</Link>
-        </h1>
         <nav className="main-navigation__header-nav">
           <NavLinks />
         </nav>

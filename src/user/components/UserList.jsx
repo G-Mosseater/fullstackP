@@ -22,7 +22,7 @@ const UserList = ({ items }) => {
             id={i.id}
             image={i.image}
             name={i.name}
-            placeCount={i.places}
+            placeCount={i.places.length}
           />
         );
       })}

@@ -4,6 +4,7 @@ const getCoordsForAddress = require("../util/location");
 const Place = require("../models/place");
 const User = require("../models/user");
 const mongoose = require("mongoose");
+const fs = require("fs");
 
 const getPlaceById = async (req, res, next) => {
   const placeId = req.params.pid;
@@ -33,7 +34,7 @@ const getPlacesByUserId = async (req, res, next) => {
     return next(new HttpError("Fetching places failed", 500));
   }
 
-  if (!userPlaces || userPlaces.length === 0) {
+  if (!userPlaces || userPlaces.places.length === 0) {
     return next(
       new HttpError("Could not find places for the provided user id", 404)
     );
@@ -49,7 +50,7 @@ const createPlace = async (req, res, next) => {
     return next(new HttpError("Something went wrong", 422));
   }
 
-  const { title, description, address, creatorId } = req.body;
+  const { title, description, address } = req.body;
   let coordinates;
   try {
     coordinates = await getCoordsForAddress(address);
@@ -62,14 +63,13 @@ const createPlace = async (req, res, next) => {
     description,
     address,
     location: coordinates,
-    image:
-      "https://images.everydayhealth.com/images/diet-nutrition/bananas-nutrition-facts-1440x810.jpg?sfvrsn=5e5dc687_3",
-    creatorId,
+    image: req.file.path,
+    creatorId: req.userData.userId
   });
   let user;
 
   try {
-    user = await User.findById(creatorId);
+    user = await User.findById(req.userData.userId);
   } catch (error) {
     return next(new HttpError("Creating place failed", 500));
   }
@@ -77,7 +77,6 @@ const createPlace = async (req, res, next) => {
     const error = new HttpError("Could not find user for the provided id", 404);
     return next(error);
   }
-  console.log(user);
 
   const sess = await mongoose.startSession();
 
@@ -110,13 +109,16 @@ const updatePlace = async (req, res, next) => {
     return next(new HttpError("Could not update place", 500));
   }
 
+  if (place.creatorId.toString() !== req.userData.userId) {
+    return next(new HttpError("Not authorized!", 401));
+  }
   place.title = title;
   place.description = description;
 
   try {
     await place.save();
   } catch (error) {
-    return next(new HttpError("Could not not update place", 500));
+    return next(new HttpError("Could not update place", 500));
   }
 
   res.status(200).json({
@@ -139,6 +141,12 @@ const deletePlace = async (req, res, next) => {
     return next(new HttpError("Could not find a place for this id", 404));
   }
 
+  if (place.creatorId.id !== req.userData.userId) {
+    return next(new HttpError("Not Authorized!", 401));
+  }
+
+  const imagePath = place.image;
+
   const sess = await mongoose.startSession();
 
   try {
@@ -151,6 +159,11 @@ const deletePlace = async (req, res, next) => {
     await sess.abortTransaction();
     return next(new HttpError("Could not delete place", 500));
   }
+
+  fs.unlink(imagePath, (err) => {
+    console.log(err);
+  });
+
   res.status(200).json({ message: "Place deleted" });
 };
 

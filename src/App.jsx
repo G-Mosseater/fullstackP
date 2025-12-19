@@ -4,25 +4,25 @@ import {
   Routes,
   Navigate,
 } from "react-router-dom";
-import Users from "./user/pages/Users";
+// import Users from "./user/pages/Users";
 import NewPlace from "./places/pages/NewPlace";
 import MainNavigation from "./shared/components/navigation/MainNavigation";
 import UserPlace from "./places/pages/UserPlace";
 import UpdatePlace from "./places/pages/UpdatePlace";
 import Auth from "./user/pages/Auth";
 import { AuthContext } from "./shared/context/authContext";
-import { useCallback, useState } from "react";
+import useAuth from "./shared/util/auth-hook";
+import { Suspense, lazy } from "react";
+import LoadingSpinner from "./shared/components/UI/LoadingSpinner";
+// Lazy load the Users component for efficient code splitting and faster initial load, can be done to all routes
+const Users = lazy(() => import("./user/pages/Users"));
 
 function App() {
-  const [isLoggedIn, setIsLoggedIn] = useState(false);
-  const login = useCallback(() => {
-    setIsLoggedIn(true);
-  }, []);
-  const logout = useCallback(() => {
-    setIsLoggedIn(false);
-  }, []);
+  const { token, login, logout, userId } = useAuth();
+
   let routes;
-  if (isLoggedIn) {
+
+  if (token) {
     routes = (
       <>
         <Route path="/" element={<Users />} />
@@ -43,11 +43,27 @@ function App() {
     );
   }
   return (
-    <AuthContext.Provider value={{ isLoggedIn: isLoggedIn, login, logout }}>
+    <AuthContext.Provider
+      value={{
+        isLoggedIn: !!token,
+        userId: userId,
+        login,
+        logout,
+        token: token,
+      }}
+    >
       <Router>
         <MainNavigation />
         <main>
-          <Routes>{routes}</Routes>
+          <Suspense
+            fallback={
+              <div className="center">
+                <LoadingSpinner />
+              </div>
+            }
+          >
+            <Routes>{routes}</Routes>
+          </Suspense>
         </main>
       </Router>
     </AuthContext.Provider>

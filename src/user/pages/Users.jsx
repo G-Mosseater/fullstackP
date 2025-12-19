@@ -1,32 +1,36 @@
+import { useEffect, useState } from "react";
 import UserList from "../components/UserList";
+import ErrorModal from "../../shared/components/UI/ErrorModal";
+import LoadingSpinner from "../../shared/components/UI/LoadingSpinner";
+import { useHttpClient } from "../../shared/util/http-hook";
+
 const Users = () => {
-  const DUMMY_USERS = [
-    {
-      id: "u1",
-      name: "Alice Johnson",
-      image:
-        "https://upload.wikimedia.org/wikipedia/commons/thumb/0/07/Restaurants%2C_Place_du_Tertre%2C_Paris_30_September_2019.jpg/1200px-Restaurants%2C_Place_du_Tertre%2C_Paris_30_September_2019.jpg",
-      places: 3,
-    },
-    {
-      id: "u2",
-      name: "Bob Smith",
-      image:
-        "https://upload.wikimedia.org/wikipedia/commons/thumb/0/07/Restaurants%2C_Place_du_Tertre%2C_Paris_30_September_2019.jpg/1200px-Restaurants%2C_Place_du_Tertre%2C_Paris_30_September_2019.jpg",
-      places: 5,
-    },
-    {
-      id: "u3",
-      name: "Charlie Brown",
-      image:
-        "https://upload.wikimedia.org/wikipedia/commons/thumb/0/07/Restaurants%2C_Place_du_Tertre%2C_Paris_30_September_2019.jpg/1200px-Restaurants%2C_Place_du_Tertre%2C_Paris_30_September_2019.jpg",
-      places: 2,
-    },
-  ];
+  const { isLoading, error, sendRequest, clearError } = useHttpClient();
+  const [loadedUsers, setLoadedUsers] = useState();
+
+  useEffect(() => {
+    const fetchUsers = async () => {
+      try {
+        const responseData = await sendRequest(
+          `${import.meta.env.VITE_BACKEND_URL}/users`
+        );
+
+        setLoadedUsers(responseData.users);
+      } catch (error) {}
+    };
+    fetchUsers();
+  }, [sendRequest]);
+
   return (
-    <div>
-      <UserList items={DUMMY_USERS} />
-    </div>
+    <>
+      <ErrorModal error={error} onClear={clearError} />
+      {isLoading && (
+        <div className="center">
+          <LoadingSpinner />
+        </div>
+      )}
+      {!isLoading && loadedUsers && <UserList items={loadedUsers} />}
+    </>
   );
 };
 
