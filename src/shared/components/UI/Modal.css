@@ -6,37 +6,38 @@
   transform: translateX(-50%);
   width: 80%;
   max-width: 40rem;
-  background: #f5faff;
-  box-shadow: 0 8px 24px rgba(0, 0, 0, 0.3);
-  overflow: hidden; 
+  background: #fefefe; /* off-white body */
+  border-radius: 10px;
+  box-shadow: 0 12px 30px rgba(0, 0, 0, 0.25); /* soft shadow */
+  overflow: hidden;
   display: flex;
   flex-direction: column;
+  transition: all 0.25s ease-out;
 }
 
 .modal__header {
-  padding: 0.4rem 1.5rem;
-  background: #1e3a8a;
-  color: white;
+  padding: 0.75rem 1.5rem;
+  background: #111214; 
+  color: #ffffff; 
   font-size: 1rem;
   font-weight: bold;
-  border-bottom: 3px solid #16407a;
-  box-sizing: border-box;
+  border-bottom: 2px solid #393e46; 
   margin: 0;
 }
 
 .modal__content {
   padding: 1rem;
-  color: #1e3a8a;
-  font-size: 1rem;
-  flex: 1; 
+  color: #000000; 
+  font-size: 1.5rem;
+  flex: 1;
   overflow-y: auto;
 }
 
 .modal__footer {
   padding: 1rem 1.5rem;
   text-align: right;
-  border-top: 1px solid #e0e0e0;
-  background: #f0f4ff;
+  border-top: 1px solid #dcdde1;
+  background: #eeeeee;
 }
 
 .modal-enter {

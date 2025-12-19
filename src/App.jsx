@@ -14,6 +14,7 @@ import { AuthContext } from "./shared/context/authContext";
 import useAuth from "./shared/util/auth-hook";
 import { Suspense, lazy } from "react";
 import LoadingSpinner from "./shared/components/UI/LoadingSpinner";
+import Footer from "./shared/components/UI/Footer";
 // Lazy load the Users component for efficient code splitting and faster initial load, can be done to all routes
 const Users = lazy(() => import("./user/pages/Users"));
 
@@ -53,18 +54,21 @@ function App() {
       }}
     >
       <Router>
-        <MainNavigation />
-        <main>
-          <Suspense
-            fallback={
-              <div className="center">
-                <LoadingSpinner />
-              </div>
-            }
-          >
-            <Routes>{routes}</Routes>
-          </Suspense>
-        </main>
+        <div className="app-container">
+          <MainNavigation />
+          <main>
+            <Suspense
+              fallback={
+                <div className="center">
+                  <LoadingSpinner />
+                </div>
+              }
+            >
+              <Routes>{routes}</Routes>
+            </Suspense>
+          </main>
+          <Footer />
+        </div>
       </Router>
     </AuthContext.Provider>
   );

@@ -8,3 +8,24 @@
   justify-content: center;
   flex-wrap: wrap;
 }
+.project-hero {
+  width: 90%;
+  max-width: 50rem;
+  margin: 2rem auto;
+  padding: 2rem;
+  text-align: center;
+  background: #fff;
+  color: #000;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+  border-radius: 8px;
+}
+
+.project-hero h1 {
+  font-size: 2.5rem;
+  margin-bottom: 1rem;
+}
+
+.project-hero p {
+  font-size: 1.25rem;
+  line-height: 1.6;
+}

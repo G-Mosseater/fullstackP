@@ -87,7 +87,7 @@ const PlaceItem = ({
           </>
         }
       >
-        <p className="center">Are you sure?</p>
+        <p className="center">This cannot be undone</p>
       </Modal>
       <li className="place-item">
         {isLoading && <LoadingSpinner asOverlay />}
