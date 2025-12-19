@@ -27,6 +27,8 @@ app.use((req, res, next) => {
 app.use("/api/places", placesRoutes);
 app.use("/api/users", usersRoutes);
 
+app.use(express.static(path.join(__dirname, "dist")));
+
 app.use((req, res, next) => {
   const error = new HttpError("Could not find this route", 404);
   throw error;
