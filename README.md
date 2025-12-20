@@ -1,6 +1,6 @@
 # Fullstack React & Express App 🚀
 
-A fullstack web application built **from scratch**, using **React (Vite)** on the frontend and **Node.js** / **Express.js** on the backend
+A fullstack web application built the **MERN** stack, **from scratch**, using **React (Vite)** on the frontend and **Node.js** / **Express.js** on the backend
 
 This project focuses on understanding how a real-world fullstack app works end-to-end — from secure authentication to state management, image uploads, and API communication.
 It prioritizes functionality and learning over visual polish, with most effort going into the fullstack logic rather than detailed styling.
