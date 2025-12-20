@@ -72,7 +72,7 @@ const createPlace = async (req, res, next) => {
           folder: "places",
           width: 800,
           height: 600,
-          crop: "fill",
+          crop: "fit",
         },
         (error, result) => {
           if (result) resolve(result);
