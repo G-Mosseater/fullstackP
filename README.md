@@ -2,8 +2,10 @@
 
 A fullstack web application built **from scratch**, using **React (Vite)** on the frontend and **Node.js** / **Express.js** on the backend
 
-This project focuses on understanding how a real-world fullstack app works end-to-end — from secure authentication to state management, image uploads, and API communication
-It prioritizes functionality and learning over visual polish, with most effort going into the fullstack logic rather than detailed styling
+This project focuses on understanding how a real-world fullstack app works end-to-end — from secure authentication to state management, image uploads, and API communication.
+It prioritizes functionality and learning over visual polish, with most effort going into the fullstack logic rather than detailed styling.
+
+The app is deployed on **Render**, which may take a minute to start on the first load (free tier).
 
 ---
 
