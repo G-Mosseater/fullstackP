@@ -9,7 +9,7 @@ const UserItem = ({ image, name, placeCount, id }) => {
         <Link to={`/${id}/places`}>
           <div className="user-item__image">
             <Avatar
-              image={`${import.meta.env.VITE_ASSET_URL}/${image}`}
+              image={image}
               alt={name}
             />
           </div>

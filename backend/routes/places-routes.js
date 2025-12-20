@@ -1,7 +1,9 @@
 const express = require("express");
 const { check } = require("express-validator");
 const checkAuth = require("../middleware/check-auth");
-const fileUpload = require("../middleware/file-upload");
+// const fileUpload = require("../middleware/file-upload");
+const upload = require('../middleware/file-upload')
+
 const {
   getPlaceById,
   getPlacesByUserId,
@@ -33,8 +35,7 @@ router.patch(
 router.delete("/:pid", deletePlace);
 
 router.post(
-  "/",
-  fileUpload.single("image"),
+  "/",upload,
   [
     check("title").not().isEmpty().withMessage("Title is required"),
     check("description")
@@ -44,6 +45,7 @@ router.post(
       .withMessage("Description is required"),
     check("address").not().isEmpty().withMessage("Address is required"),
   ],
+
   createPlace
 );
 

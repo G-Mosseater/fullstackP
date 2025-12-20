@@ -2,7 +2,6 @@ const express = require("express");
 const mongoose = require("mongoose");
 require("dotenv").config();
 const path = require("path");
-const fs = require("fs");
 const MONGODB_URI = process.env.MONGODB_URI;
 
 const placesRoutes = require("./routes/places-routes");
@@ -13,7 +12,7 @@ const HttpError = require("./models/http-error");
 const app = express();
 
 app.use(express.json());
-app.use("/uploads/images", express.static(path.join("uploads", "images")));
+// app.use("/uploads/images", express.static(path.join("uploads", "images")));
 app.use((req, res, next) => {
   res.setHeader("Access-Control-Allow-Origin", "*");
   res.setHeader(

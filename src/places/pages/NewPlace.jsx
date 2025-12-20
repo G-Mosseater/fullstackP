@@ -50,7 +50,7 @@ const NewPlace = () => {
       formData.append("description", formState.inputs.description.value);
       formData.append("address", formState.inputs.address.value);
       formData.append("image", formState.inputs.image.value);
-
+ 
       await sendRequest(
         `${import.meta.env.VITE_BACKEND_URL}/places`,
         "POST",

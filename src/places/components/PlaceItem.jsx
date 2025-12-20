@@ -94,7 +94,7 @@ const PlaceItem = ({
         <Card className="place-item__content">
           <div className="place-item__image">
             <img
-              src={`${import.meta.env.VITE_ASSET_URL}/${image}`}
+              src={image}
               alt={title}
             />
           </div>

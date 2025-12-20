@@ -4,6 +4,7 @@ const jwt = require("jsonwebtoken");
 const { validationResult } = require("express-validator");
 const User = require("../models/user");
 require("dotenv").config();
+const cloudinary = require("../util/cloudinary");
 
 const getUsers = async (req, res, next) => {
   let users;
@@ -44,11 +45,28 @@ const signUp = async (req, res, next) => {
   } catch (error) {
     return next(new HttpError("Creating new user failed", 500));
   }
+  const imageFile = req.files.image;
+  let uploadResult;
+  try {
+    uploadResult = await cloudinary.uploader.upload(
+      imageFile.tempFilePath,
+
+      {
+        folder: "users",
+        width: 800,
+        height: 600,
+        crop: "fill",
+      }
+    );
+  } catch (error) {
+    return next(new HttpError("Image upload failed", 500));
+  }
 
   const createdUser = new User({
     name,
     email,
-    image: req.file.path,
+    image: uploadResult.secure_url,
+    cloudinaryId: uploadResult.public_id,
     password: hashedPassword,
     places: [],
   });
@@ -77,6 +95,7 @@ const signUp = async (req, res, next) => {
     userId: createdUser.id,
     email: createdUser.email,
     token: token,
+    image: createdUser.image,
   });
 };
 

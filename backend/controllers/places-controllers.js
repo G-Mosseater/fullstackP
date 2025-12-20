@@ -4,7 +4,7 @@ const getCoordsForAddress = require("../util/location");
 const Place = require("../models/place");
 const User = require("../models/user");
 const mongoose = require("mongoose");
-const fs = require("fs");
+const cloudinary = require("../util/cloudinary");
 
 const getPlaceById = async (req, res, next) => {
   const placeId = req.params.pid;
@@ -44,18 +44,37 @@ const getPlacesByUserId = async (req, res, next) => {
   });
 };
 
-const createPlace = async (req, res, next) => {
+const createPlace = async (req, res, next) => {  
   const errors = validationResult(req);
   if (!errors.isEmpty()) {
     return next(new HttpError("Something went wrong", 422));
   }
 
   const { title, description, address } = req.body;
+  if (!req.files || !req.files.image) {
+    return next(new HttpError("No image uploaded", 422));
+  }
+  const imageFile = req.files.image;
   let coordinates;
   try {
     coordinates = await getCoordsForAddress(address);
   } catch (error) {
     return next(error);
+  }
+  let uploadResult;
+  try {
+    uploadResult = await cloudinary.uploader.upload(
+      imageFile.tempFilePath,
+
+      {
+        folder: "places",
+        width: 800,
+        height: 600,
+        crop: "fill",
+      }
+    );
+  } catch (error) {
+    return next(new HttpError("Image upload failed", 500));
   }
 
   const createdPlace = new Place({
@@ -63,9 +82,11 @@ const createPlace = async (req, res, next) => {
     description,
     address,
     location: coordinates,
-    image: req.file.path,
-    creatorId: req.userData.userId
+    image: uploadResult.secure_url,
+    cloudinaryId: uploadResult.public_id,
+    creatorId: req.userData.userId,
   });
+
   let user;
 
   try {
@@ -145,11 +166,11 @@ const deletePlace = async (req, res, next) => {
     return next(new HttpError("Not Authorized!", 401));
   }
 
-  const imagePath = place.image;
-
   const sess = await mongoose.startSession();
-
   try {
+    if (place.cloudinaryId) {
+      await cloudinary.uploader.destroy(place.cloudinaryId);
+    }
     sess.startTransaction();
     await place.deleteOne({ session: sess });
     place.creatorId.places.pull(place._id);
@@ -159,10 +180,6 @@ const deletePlace = async (req, res, next) => {
     await sess.abortTransaction();
     return next(new HttpError("Could not delete place", 500));
   }
-
-  fs.unlink(imagePath, (err) => {
-    console.log(err);
-  });
 
   res.status(200).json({ message: "Place deleted" });
 };
