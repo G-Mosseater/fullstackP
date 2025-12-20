@@ -44,7 +44,7 @@ const getPlacesByUserId = async (req, res, next) => {
   });
 };
 
-const createPlace = async (req, res, next) => {  
+const createPlace = async (req, res, next) => {
   const errors = validationResult(req);
   if (!errors.isEmpty()) {
     return next(new HttpError("Something went wrong", 422));
@@ -62,18 +62,27 @@ const createPlace = async (req, res, next) => {
     return next(error);
   }
   let uploadResult;
-  try {
-    uploadResult = await cloudinary.uploader.upload(
-      imageFile.tempFilePath,
 
-      {
-        folder: "places",
-        width: 800,
-        height: 600,
-        crop: "fill",
-      }
-    );
-  } catch (error) {
+  try {
+    const streamifier = require("streamifier");
+
+    uploadResult = await new Promise((resolve, reject) => {
+      const stream = cloudinary.uploader.upload_stream(
+        {
+          folder: "places",
+          width: 800,
+          height: 600,
+          crop: "fill",
+        },
+        (error, result) => {
+          if (result) resolve(result);
+          else reject(error);
+        }
+      );
+      streamifier.createReadStream(imageFile.data).pipe(stream);
+    });
+  } catch (err) {
+    console.error(err);
     return next(new HttpError("Image upload failed", 500));
   }
 

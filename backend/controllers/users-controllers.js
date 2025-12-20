@@ -46,19 +46,28 @@ const signUp = async (req, res, next) => {
     return next(new HttpError("Creating new user failed", 500));
   }
   const imageFile = req.files.image;
+
   let uploadResult;
   try {
-    uploadResult = await cloudinary.uploader.upload(
-      imageFile.tempFilePath,
+    const streamifier = require("streamifier");
 
-      {
-        folder: "users",
-        width: 800,
-        height: 600,
-        crop: "fill",
-      }
-    );
-  } catch (error) {
+    uploadResult = await new Promise((resolve, reject) => {
+      const stream = cloudinary.uploader.upload_stream(
+        {
+          folder: "users",
+          width: 800,
+          height: 600,
+          crop: "fill",
+        },
+        (error, result) => {
+          if (result) resolve(result);
+          else reject(error);
+        }
+      );
+      streamifier.createReadStream(imageFile.data).pipe(stream);
+    });
+  } catch (err) {
+    console.error(err);
     return next(new HttpError("Image upload failed", 500));
   }
 
